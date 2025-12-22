@@ -1,0 +1,33 @@
+# refer repository: https://github.com/deviantony/docker-elk
+# image: https://hub.docker.com/_/logstash
+# docs: https://www.elastic.co/guide/en/logstash/current/docker.html#docker
+# docs: https://www.elastic.co/guide/en/logstash/current/docker-config.html
+
+version: '3.8' 
+
+services:
+
+  logstash:
+    image: my-logstash:1.0
+    container_name: ${W9_ID}
+    restart: unless-stopped
+    volumes:
+      - ./src/pipeline:/usr/share/logstash/pipeline
+      - ./src/scripts:/usr/share/logstash/scripts
+      - logstash_data_output:/usr/share/logstash/data
+    environment:
+      - "LS_JAVA_OPTS=-Xmx4g -Xms2g"
+    ports:
+      - ${W9_HTTP_PORT_SET}:9600 # for API
+      #- 5000:5000  # for TCP/UDP
+      #- 5044:5044 # for beate
+    env_file: .env
+
+volumes:
+  logstash:
+  logstash_data_output:
+
+networks:
+  default:
+    name: ${W9_NETWORK}
+    external: true
